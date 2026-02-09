@@ -1,6 +1,7 @@
 export class GoogleCalendarService {
-  constructor() {
-    this.calendarName = "ZCAS Timetable";
+  constructor(calendarName = "UniSync Timetable", timeZone = "Africa/Lusaka") {
+    this.calendarName = calendarName;
+    this.timeZone = timeZone;
   }
 
   async getAuthToken(interactive = false) {
@@ -38,8 +39,8 @@ export class GoogleCalendarService {
       },
       body: JSON.stringify({
         summary: this.calendarName,
-        description: "Automatically synced from ZCAS Timetable extension.",
-        timeZone: "Africa/Lusaka" // Important for ZCAS
+        description: "Automatically synced from UniSync extension.",
+        timeZone: this.timeZone
       })
     });
     const newCal = await createRes.json();
@@ -77,19 +78,17 @@ export class GoogleCalendarService {
     // 2. Format Start/End for API
     const startIso = nextDate.toISOString().replace(/\.\d{3}Z$/, ''); // simple ISO
     // Actually Google API wants "2023-10-27T10:00:00" (local time usually if timezone specified)
-    // We will use the calendar's timezone "Africa/Lusaka"
+    // We will use the configured timezone
     
-    // Easier: Send standard ISO with timezone offset for Lusaka (CAT is UTC+2)
-    // We'll trust the date object constructed in local browser time if user is in Zambia,
+    // Easier: Send standard ISO with timezone offset for the location
+    // We'll trust the date object constructed in local browser time if user is in the same zone,
     // or manually construct the string.
     
-    // Let's explicitly format for Lusaka (UTC+2) to be safe regardless of where the user's computer is.
-    const lusakaOffset = 2; 
-    const startDateTime = this.formatToLusakaTime(nextDate);
+    const startDateTime = this.formatToLocalTime(nextDate);
     
     // Calculate End Time
     const endDate = new Date(nextDate.getTime() + eventData.durationMinutes * 60000);
-    const endDateTime = this.formatToLusakaTime(endDate);
+    const endDateTime = this.formatToLocalTime(endDate);
 
     const eventBody = {
       summary: eventData.subject,
@@ -97,11 +96,11 @@ export class GoogleCalendarService {
       description: `Lecturer: ${eventData.lecturer}`,
       start: {
         dateTime: startDateTime,
-        timeZone: "Africa/Lusaka"
+        timeZone: this.timeZone
       },
       end: {
         dateTime: endDateTime,
-        timeZone: "Africa/Lusaka"
+        timeZone: this.timeZone
       },
       recurrence: [
         "RRULE:FREQ=WEEKLY"
@@ -141,7 +140,7 @@ export class GoogleCalendarService {
     return d;
   }
 
-  formatToLusakaTime(dateObj) {
+  formatToLocalTime(dateObj) {
     // Returns "YYYY-MM-DDTHH:mm:ss" formatted for local time, 
     // but effectively we are forcing the numbers to match what we want.
     // Since we setHours() above on the local object, 'dateObj' holds the correct wall-clock numbers.

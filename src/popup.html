@@ -3,15 +3,16 @@
 <head>
   <style>
     body {
-      width: 300px;
+      width: 320px;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       padding: 15px;
       background-color: #f9f9f9;
+      color: #333;
     }
     h2 {
       margin-top: 0;
-      color: #333;
       font-size: 18px;
+      margin-bottom: 15px;
     }
     .status-box {
       background: white;
@@ -25,7 +26,15 @@
       font-weight: bold;
       color: #666;
       display: block;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
+    }
+    input[type="url"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
     }
     button {
       width: 100%;
@@ -37,6 +46,7 @@
       cursor: pointer;
       font-weight: bold;
       transition: background 0.2s;
+      margin-bottom: 8px;
     }
     button:hover {
       background-color: #357ae8;
@@ -48,32 +58,44 @@
     .info {
       font-size: 11px;
       color: #888;
-      margin-top: 10px;
       text-align: center;
+      margin-top: 5px;
     }
-    .error {
-      color: #d32f2f;
-    }
-    .success {
-      color: #2e7d32;
-    }
+    .error { color: #d32f2f; }
+    .success { color: #2e7d32; }
   </style>
 </head>
 <body>
-  <h2>ZCAS Timetable Sync</h2>
+  <h2>UniSync</h2>
   
   <div class="status-box">
-    <span class="label">Status:</span>
+    <span class="label">University:</span>
+    <select id="university" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
+      <option value="zcas">ZCAS (Zambia)</option>
+    </select>
+
+    <span class="label">Calendar Name:</span>
+    <input type="text" id="calendarName" placeholder="UniSync Timetable" value="UniSync Timetable" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+
+    <span class="label">Timezone:</span>
+    <select id="timezone" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
+      <option value="Africa/Lusaka">Africa/Lusaka (CAT)</option>
+      <option value="UTC">UTC</option>
+      <!-- Add more common ones or make this a text input if needed -->
+    </select>
+
+    <span class="label">Timetable URL:</span>
+    <input type="url" id="timetableUrl" placeholder="Paste your timetable link...">
+    
+    <span class="label" style="margin-top:10px;">Status:</span>
     <div id="statusText">Ready</div>
-    <br>
-    <span class="label">Last Synced:</span>
-    <div id="lastSync">Never</div>
+    <div id="lastSync" style="font-size: 11px; color: #888; margin-top: 2px;">Last: Never</div>
   </div>
 
-  <button id="syncBtn">Sync Now</button>
+  <button id="saveSyncBtn">Save & Sync Now</button>
   
   <div class="info">
-    Syncs with "ZCAS Timetable" calendar.
+    Open your timetable page, copy the URL,<br>and paste it above.
   </div>
 
   <script src="popup.js"></script>

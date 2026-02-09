@@ -1,40 +1,73 @@
-# ZCAS Timetable Sync Extension
+# UniSync: Universal Timetable Sync
 
-This Chrome extension automatically scrapes your ZCAS cybersecurity timetable and syncs it to a dedicated Google Calendar.
+**UniSync** is a smart, adaptable Chrome Extension that scrapes your university timetable and syncs it directly to your Google Calendar. 
 
-## Setup Instructions
+It ensures you never miss a class by keeping your schedule up-to-date automatically, handling complex timetable layouts, merged cells, and timezone conversions.
 
-### 1. Get a Google Client ID
-To allow the extension to access your calendar, you need a free Client ID from Google.
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2. Create a new project (e.g., "ZCAS Sync").
-3. Go to **APIs & Services > Library**, search for **Google Calendar API**, and enable it.
-4. Go to **APIs & Services > Credentials**.
-5. Click **Create Credentials > OAuth client ID**.
-6. Application type: **Chrome Extension**.
-7. Name: "ZCAS Extension".
-8. Item ID: You need the extension ID.
-   - Open Chrome, go to `chrome://extensions`.
-   - Turn on **Developer mode** (top right).
-   - Click **Load unpacked** and select the `zcas-timetable-extension` folder.
-   - Copy the **ID** (a long string of letters) from the card.
-   - Paste this ID into the Google Cloud Console "Item ID" field.
-9. Click **Create**. Copy the **Client ID** (ends in `.apps.googleusercontent.com`).
+## 📖 The Story Behind UniSync
 
-### 2. Configure the Extension
-1. Open the file `manifest.json` in the `zcas-timetable-extension` folder.
-2. Find the line: `"client_id": "YOUR_CLIENT_ID_HERE"`
-3. Replace `YOUR_CLIENT_ID_HERE` with the Client ID you just copied.
-4. Save the file.
+This project started as a personal tool to help me manage my schedule at **ZCAS (Zambia Centre for Accountancy Studies)**. I realized that manually entering classes into my calendar was tedious and prone to errors, especially when the timetable changed.
 
-### 3. Finalize
-1. Go back to `chrome://extensions`.
-2. Click the **Refresh** icon on the ZCAS extension card.
-3. Click the extension icon in your browser toolbar.
-4. Click **Sync Now**.
-5. Sign in with your Google account when prompted.
+After building a robust parser for my own use, I decided to evolve the project into **UniSync**. The goal was to make the architecture **adaptable and smart**, allowing students from *other* universities to easily plug in their own parsing logic without rewriting the entire extension. 
 
-## Features
-- **Daily Sync:** Checks for updates automatically once a day.
-- **Smart Parsing:** Handles merged classes, 30-min slots, and Part-time separators.
-- **Clean Calendar:** Creates a separate "ZCAS Timetable" calendar so your personal events stay safe.
+Today, it stands as a modular platform that anyone can extend!
+
+## ✨ Features
+
+-   **Multi-University Support:** Currently supports ZCAS, with a modular "Parser Factory" architecture to easily add others.
+-   **Smart Parsing:** Handles complex HTML tables, merged cells (long lectures), and irregular time slots.
+-   **Customizable:** Choose your university, set a custom calendar name, and define your timezone.
+-   **Automatic Sync:** Runs daily in the background to catch any schedule changes.
+-   **Safe:** Creates a separate calendar (default: "UniSync Timetable") so it never messes with your personal events.
+
+## 🚀 How to Use
+
+### 1. Installation
+1.  Clone or download this repository.
+2.  Open Chrome and navigate to `chrome://extensions`.
+3.  Enable **Developer mode** (top right toggle).
+4.  Click **Load unpacked** and select the `zcas-timetable-extension` folder from this project.
+
+### 2. Google API Setup (One-time)
+To allow the extension to write to your calendar, you need a Client ID.
+1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2.  Create a project and enable the **Google Calendar API**.
+3.  Create **OAuth credentials** for a "Chrome Extension".
+4.  Copy the **Extension ID** from your `chrome://extensions` page and paste it into the "Item ID" field in the console.
+5.  Copy the generated **Client ID**.
+6.  Open `manifest.json` in this project and paste your Client ID into the `client_id` field.
+7.  Reload the extension in Chrome.
+
+### 3. Syncing Your Timetable
+1.  Log in to your university student portal and open your timetable page.
+2.  Copy the **URL** of that page.
+3.  Click the **UniSync icon** in your browser toolbar.
+4.  Select your **University** (e.g., ZCAS).
+5.  (Optional) Customize the **Calendar Name** and **Timezone**.
+6.  Paste the URL and click **Save & Sync Now**.
+7.  Authorize with Google when prompted.
+8.  Done! Your classes will appear in your Google Calendar shortly.
+
+## ❓ Frequently Asked Questions (FAQ)
+
+**Q: Can I use this for a university other than ZCAS?**
+A: Yes, but you (or a developer) need to write a parser for it! The code is modular. You just need to add a new file in `src/utils/parsers/` and register it in `src/utils/parser.js`.
+
+**Q: Will this delete my existing calendar events?**
+A: **No.** UniSync only touches the specific calendar it creates (e.g., "UniSync Timetable"). It clears *future* events in that specific calendar before re-syncing to avoid duplicates, but your personal "Primary" calendar remains untouched.
+
+**Q: How often does it sync?**
+A: The extension creates a background alarm to run the sync process automatically **once every 24 hours**, as long as Chrome is open.
+
+**Q: Why do I need to create my own Google Cloud Project?**
+A: Since this is a developer/sideloaded extension, it cannot share a published Client ID. Creating your own free ID ensures you have full control and access.
+
+## 🛠️ For Developers: Adding a New University
+
+1.  Create `src/utils/parsers/myUniversity.js`.
+2.  Implement a class with a `parse()` method that returns an array of event objects: `{ day, startTime: {h, m}, durationMinutes, subject, room, lecturer }`.
+3.  Import it in `src/utils/parser.js` and add it to the `ParserFactory`.
+4.  Add the option to `src/popup.html`.
+
+---
+*Built with ❤️ by ekkoloxx*

@@ -1,12 +1,10 @@
 import { GoogleCalendarService } from './utils/google-calendar.js';
 
 const ALARM_NAME = 'daily_sync';
-const TIMETABLE_URL = 'https://zcasu.edu.zm/timetables/alltimetables/x3001bsccs313224.htm';
 
 // Initialize
 chrome.runtime.onInstalled.addListener(() => {
   console.log("Extension Installed");
-  // Create an alarm to check once a day (periodInMinutes: 1440)
   chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1440 });
 });
 
@@ -17,7 +15,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   }
 });
 
-// Message Handler (from Popup)
+// Message Handler
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'START_SYNC') {
     runSyncProcess()
@@ -29,30 +27,35 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 async function runSyncProcess() {
   try {
+    // 0. Get URL from storage
+    const data = await chrome.storage.local.get(['timetableUrl', 'university', 'calendarName', 'timezone']);
+    const targetUrl = data.timetableUrl;
+    const parserType = data.university || 'zcas'; // default
+    const calName = data.calendarName || "UniSync Timetable";
+    const tz = data.timezone || "Africa/Lusaka";
+
+    if (!targetUrl) {
+      throw new Error("No timetable URL set. Please open the extension popup and paste your URL.");
+    }
+
     // 1. Fetch HTML
-    const response = await fetch(TIMETABLE_URL);
-    if (!response.ok) throw new Error("Failed to fetch timetable page.");
+    const response = await fetch(targetUrl);
+    if (!response.ok) throw new Error(`Failed to fetch page (${response.status}). Check the URL.`);
     const htmlText = await response.text();
 
     // 2. Parse HTML (via Offscreen)
-    const events = await parseHtmlViaOffscreen(htmlText);
+    const events = await parseHtmlViaOffscreen(htmlText, parserType);
     if (!events || events.length === 0) {
-      throw new Error("No events found in timetable. Check if URL structure changed.");
+      throw new Error("No classes found. Ensure the URL points to a valid timetable page.");
     }
 
     // 3. Sync to Google Calendar
-    const calService = new GoogleCalendarService();
-    // Non-interactive token for background sync. 
-    // If it fails (user revoked), we can't show prompt in background.
-    // Ideally, we catch this and set an error state in storage.
+    const calService = new GoogleCalendarService(calName, tz);
     const token = await calService.getAuthToken(false); 
     
     const calId = await calService.getOrCreateCalendar(token);
-    
-    // Clear old
     await calService.clearFutureEvents(token, calId);
     
-    // Create new
     for (const ev of events) {
       await calService.createEvent(token, calId, ev);
     }
@@ -71,7 +74,7 @@ async function runSyncProcess() {
       lastSync: new Date().toLocaleString(),
       status: `Error: ${error.message}`
     });
-    // If token error, we might need re-auth next time popup opens
+    
     if (error.message.includes('Authorization')) {
         await chrome.identity.removeCachedAuthToken({ token: error.token });
     }
@@ -80,8 +83,7 @@ async function runSyncProcess() {
 }
 
 // Offscreen Helper
-async function parseHtmlViaOffscreen(htmlContent) {
-  // Ensure offscreen document exists
+async function parseHtmlViaOffscreen(htmlContent, parserType) {
   const existingContexts = await chrome.runtime.getContexts({
     contextTypes: ['OFFSCREEN_DOCUMENT']
   });
@@ -94,11 +96,11 @@ async function parseHtmlViaOffscreen(htmlContent) {
     });
   }
 
-  // Send message
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({
       action: 'PARSE_TIMETABLE',
-      data: htmlContent
+      data: htmlContent,
+      parserType: parserType
     }, (response) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);

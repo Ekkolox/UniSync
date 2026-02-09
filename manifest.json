@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ZCAS Timetable Sync",
-  "version": "1.0",
-  "description": "Syncs your ZCAS cybersecurity timetable to Google Calendar automatically.",
+  "name": "UniSync",
+  "version": "2.1",
+  "description": "Syncs your university timetable to Google Calendar automatically.",
   "permissions": [
     "identity",
     "alarms",
@@ -10,8 +10,7 @@
     "offscreen"
   ],
   "host_permissions": [
-    "https://zcasu.edu.zm/*",
-    "https://www.googleapis.com/*"
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "src/background.js",
