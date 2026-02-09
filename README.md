@@ -67,4 +67,4 @@ A: Since this is a developer/sideloaded extension, it cannot share a published C
 4.  Add the option to `src/popup.html`.
 
 ---
-*Built by ekkoloxx*
+
