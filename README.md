@@ -6,11 +6,8 @@ It ensures you never miss a class by keeping your schedule up-to-date automatica
 
 ## 📖 The Story Behind UniSync
 
-This project started as a personal tool to help me manage my schedule at **ZCAS (Zambia Centre for Accountancy Studies)**. I realized that manually entering classes into my calendar was tedious and prone to errors, especially when the timetable changed.
+Well this started because I got tired of having to always manually insert my timetable's contents into my google calendar. As a result my laziness is now to  your benefit
 
-After building a robust parser for my own use, I decided to evolve the project into **UniSync**. The goal was to make the architecture **adaptable and smart**, allowing students from *other* universities to easily plug in their own parsing logic without rewriting the entire extension. 
-
-Today, it stands as a modular platform that anyone can extend!
 
 ## ✨ Features
 
@@ -70,4 +67,4 @@ A: Since this is a developer/sideloaded extension, it cannot share a published C
 4.  Add the option to `src/popup.html`.
 
 ---
-*Built with ❤️ by ekkoloxx*
+*Built by ekkoloxx*
