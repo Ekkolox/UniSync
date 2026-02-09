@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "ZCAS Timetable Sync",
+  "version": "1.0",
+  "description": "Syncs your ZCAS cybersecurity timetable to Google Calendar automatically.",
+  "permissions": [
+    "identity",
+    "alarms",
+    "storage",
+    "offscreen"
+  ],
+  "host_permissions": [
+    "https://zcasu.edu.zm/*",
+    "https://www.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "oauth2": {
+    "client_id": "851449673377-dla7fsfu47s4tct56rn6j304bk9tpp40.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/calendar",
+      "https://www.googleapis.com/auth/calendar.events"
+    ]
+  }
+}
