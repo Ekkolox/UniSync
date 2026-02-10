@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', init);
 document.getElementById('saveSyncBtn').addEventListener('click', startSync);
 
+// Defaults
+const DEFAULT_CALENDAR_NAME = "UniSync Timetable";
+
 function init() {
   // Load saved data
-  chrome.storage.local.get(['timetableUrl', 'lastSync', 'status', 'university', 'calendarName', 'timezone'], (data) => {
+  chrome.storage.local.get(['timetableUrl', 'lastSync', 'status', 'university'], (data) => {
     if (data.timetableUrl) document.getElementById('timetableUrl').value = data.timetableUrl;
     if (data.university) document.getElementById('university').value = data.university;
-    if (data.calendarName) document.getElementById('calendarName').value = data.calendarName;
-    if (data.timezone) document.getElementById('timezone').value = data.timezone;
     
     if (data.lastSync) {
       document.getElementById('lastSync').textContent = `Last: ${data.lastSync}`;
@@ -31,8 +32,6 @@ function startSync() {
   const urlInput = document.getElementById('timetableUrl');
   const url = urlInput.value.trim();
   const university = document.getElementById('university').value;
-  const calendarName = document.getElementById('calendarName').value.trim() || "UniSync Timetable";
-  const timezone = document.getElementById('timezone').value;
 
   const btn = document.getElementById('saveSyncBtn');
   const statusEl = document.getElementById('statusText');
@@ -53,12 +52,15 @@ function startSync() {
   btn.disabled = true;
   btn.textContent = "Saving...";
 
-  // Save URL first
+  // Detect System Timezone
+  const systemTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Save URL & Config
   chrome.storage.local.set({ 
     timetableUrl: url,
     university: university,
-    calendarName: calendarName,
-    timezone: timezone
+    calendarName: DEFAULT_CALENDAR_NAME,
+    timezone: systemTimezone
   }, () => {
     btn.textContent = "Authorizing...";
     

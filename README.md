@@ -11,7 +11,7 @@ Well this started because I got tired of having to always manually insert my tim
 
 ## ✨ Features
 
--   **Multi-University Support:** Currently supports ZCAS, with a modular "Parser Factory" architecture to easily add others.
+-   **Multi-University Support:** Fully supports ZCAS. We also have experimental/developer templates for **UNZA**, **CBU**, and **UNILUS**, making it easier for developers to contribute parsers for these institutions.
 -   **Smart Parsing:** Handles complex HTML tables, merged cells (long lectures), and irregular time slots.
 -   **Customizable:** Choose your university, set a custom calendar name, and define your timezone.
 -   **Automatic Sync:** Runs daily in the background to catch any schedule changes.
@@ -48,7 +48,7 @@ To allow the extension to write to your calendar, you need a Client ID.
 ## ❓ Frequently Asked Questions (FAQ)
 
 **Q: Can I use this for a university other than ZCAS?**
-A: Yes, but you (or a developer) need to write a parser for it! The code is modular. You just need to add a new file in `src/utils/parsers/` and register it in `src/utils/parser.js`.
+A: **Yes.** We currently fully support **ZCAS**. We have also added initial template support for **UNZA**, **CBU**, and **UNILUS** to help developers get started quickly. If your university isn't listed, you can write a parser for it! The code is modular. You just need to add a new file in `src/utils/parsers/` and register it in `src/utils/parser.js`.
 
 **Q: Will this delete my existing calendar events?**
 A: **No.** UniSync only touches the specific calendar it creates (e.g., "UniSync Timetable"). It clears *future* events in that specific calendar before re-syncing to avoid duplicates, but your personal "Primary" calendar remains untouched.

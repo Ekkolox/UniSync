@@ -32,7 +32,8 @@ async function runSyncProcess() {
     const targetUrl = data.timetableUrl;
     const parserType = data.university || 'zcas'; // default
     const calName = data.calendarName || "UniSync Timetable";
-    const tz = data.timezone || "Africa/Lusaka";
+    // Use stored timezone if available (from popup), otherwise fallback will happen in Service
+    const tz = data.timezone; 
 
     if (!targetUrl) {
       throw new Error("No timetable URL set. Please open the extension popup and paste your URL.");
@@ -44,21 +45,28 @@ async function runSyncProcess() {
     const htmlText = await response.text();
 
     // 2. Parse HTML (via Offscreen)
-    const events = await parseHtmlViaOffscreen(htmlText, parserType);
+    let events = await parseHtmlViaOffscreen(htmlText, parserType);
     if (!events || events.length === 0) {
       throw new Error("No classes found. Ensure the URL points to a valid timetable page.");
     }
+
+    // FILTER: Part-time students (Exclude >= 17:30)
+    // Assuming event.startTime is { h: number, m: number }
+    const originalCount = events.length;
+    events = events.filter(ev => {
+      if (ev.startTime.h > 17) return false; // 18:00+
+      if (ev.startTime.h === 17 && ev.startTime.m >= 30) return false; // 17:30+
+      return true;
+    });
+    console.log(`Filtered ${originalCount - events.length} part-time classes.`);
 
     // 3. Sync to Google Calendar
     const calService = new GoogleCalendarService(calName, tz);
     const token = await calService.getAuthToken(false); 
     
     const calId = await calService.getOrCreateCalendar(token);
-    await calService.clearFutureEvents(token, calId);
-    
-    for (const ev of events) {
-      await calService.createEvent(token, calId, ev);
-    }
+    // Use Smart Sync logic
+    await calService.syncEvents(token, calId, events);
 
     // 4. Update Status
     await chrome.storage.local.set({ 
