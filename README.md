@@ -9,7 +9,7 @@ It ensures you never miss a class by keeping your schedule up-to-date automatica
 Well this started because I got tired of having to always manually insert my timetable's contents into my google calendar. As a result my laziness is now to  your benefit
 
 
-## ✨ Features
+##  Features
 
 -   **Multi-University Support:** Designed with a modular architecture. While it comes with an example parser, it is intended for developers to plug in their own parsers for any university portal.
 -   **Smart Parsing:** Handles complex HTML tables, merged cells (long lectures), and irregular time slots.
@@ -17,7 +17,7 @@ Well this started because I got tired of having to always manually insert my tim
 -   **Automatic Sync:** Runs daily in the background to catch any schedule changes.
 -   **Safe:** Creates a separate calendar (default: "UniSync Timetable") so it never messes with your personal events.
 
-## 🚀 How to Use
+##  How to Use
 
 ### 1. Installation
 1.  Clone or download this repository.
