@@ -11,7 +11,7 @@ Well this started because I got tired of having to always manually insert my tim
 
 ## ✨ Features
 
--   **Multi-University Support:** Fully supports ZCAS. We also have experimental/developer templates for **UNZA**, **CBU**, and **UNILUS**, making it easier for developers to contribute parsers for these institutions.
+-   **Multi-University Support:** Designed with a modular architecture. While it comes with an example parser, it is intended for developers to plug in their own parsers for any university portal.
 -   **Smart Parsing:** Handles complex HTML tables, merged cells (long lectures), and irregular time slots.
 -   **Customizable:** Choose your university, set a custom calendar name, and define your timezone.
 -   **Automatic Sync:** Runs daily in the background to catch any schedule changes.
@@ -39,7 +39,7 @@ To allow the extension to write to your calendar, you need a Client ID.
 1.  Log in to your university student portal and open your timetable page.
 2.  Copy the **URL** of that page.
 3.  Click the **UniSync icon** in your browser toolbar.
-4.  Select your **University** (e.g., ZCAS).
+4.  Select your **University Parser** from the dropdown.
 5.  (Optional) Customize the **Calendar Name** and **Timezone**.
 6.  Paste the URL and click **Save & Sync Now**.
 7.  Authorize with Google when prompted.
@@ -47,8 +47,8 @@ To allow the extension to write to your calendar, you need a Client ID.
 
 ## ❓ Frequently Asked Questions (FAQ)
 
-**Q: Can I use this for a university other than ZCAS?**
-A: **Yes.** We currently fully support **ZCAS**. We have also added initial template support for **UNZA**, **CBU**, and **UNILUS** to help developers get started quickly. If your university isn't listed, you can write a parser for it! The code is modular. You just need to add a new file in `src/utils/parsers/` and register it in `src/utils/parser.js`.
+**Q: Does this work for my university?**
+A: **It depends.** This extension works by "scraping" the HTML of a timetable page. Because every university's portal looks different, a specific "Parser" is needed for each one. The project includes a reference implementation, but you will likely need to write (or ask a developer to write) a small JavaScript parser file to map your specific timetable's layout to the extension's format.
 
 **Q: Will this delete my existing calendar events?**
 A: **No.** UniSync only touches the specific calendar it creates (e.g., "UniSync Timetable"). It clears *future* events in that specific calendar before re-syncing to avoid duplicates, but your personal "Primary" calendar remains untouched.
